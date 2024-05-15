@@ -1,0 +1,14 @@
+﻿  main.cpp
+C:\Users\PC\source\repos\physics\physics\main.cpp(102,37): warning C4018: '<': signed/unsigned mismatch
+C:\Users\PC\source\repos\physics\physics\main.cpp(211,17): warning C4244: '=': conversion from '__int64' to 'float', possible loss of data
+C:\Users\PC\source\repos\physics\physics\main.cpp(299,66): warning C4244: 'argument': conversion from '__int64' to 'int', possible loss of data
+C:\Users\PC\source\repos\physics\physics\main.cpp(299,51): warning C4244: 'argument': conversion from '__int64' to 'int', possible loss of data
+C:\Users\PC\source\repos\physics\physics\main.cpp(299,31): warning C4244: 'argument': conversion from '__int64' to 'int', possible loss of data
+C:\Users\PC\source\repos\physics\physics\main.cpp(302,30): warning C4244: 'argument': conversion from 'const float' to 'unsigned int', possible loss of data
+C:\Users\PC\source\repos\physics\physics\main.cpp(324,31): warning C4244: 'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\PC\source\repos\physics\physics\main.cpp(324,37): warning C4244: 'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\PC\source\repos\physics\physics\main.cpp(324,46): warning C4244: 'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\PC\source\repos\physics\physics\main.cpp(324,55): warning C4244: 'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\PC\source\repos\physics\physics\main.cpp(325,34): warning C4244: 'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+C:\Users\PC\source\repos\physics\physics\main.cpp(325,40): warning C4244: 'argument': conversion from '__int64' to 'const unsigned int', possible loss of data
+  physics.vcxproj -> C:\Users\PC\source\repos\physics\Debug\physics.exe
