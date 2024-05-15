@@ -25,11 +25,13 @@ ll Rand(ll l, ll r) {
 class sP { 
     public:
         float x, y, R;
-        sP(float x1, float y1, float R1)
+        int id;
+        sP(float x1, float y1, float R1, int X)
         {
             x = x1;
             y = y1;
             R = R1;
+            id = X;
         }
         sP() = default;
         void show() {
@@ -103,18 +105,18 @@ class Quadtree {
                 this->points.push_back(x);
                 return true;
             }
-            else
+            else{
                 if (!this->divided)
                     this->subdivide();
-                else {
-                    if (this->northeast->insert(x))
-                        return true;
-                    if (this->northwest->insert(x))
-                        return true;
-                    if (this->southeast->insert(x))
-                        return true;
-                    if (this->southwest->insert(x))
-                        return true;
+                
+                if (this->northeast->insert(x))
+                    return true;
+                if (this->northwest->insert(x))
+                    return true;
+                if (this->southeast->insert(x))
+                    return true;
+                if (this->southwest->insert(x))
+                    return true;
                 }  
             return false;
         }
@@ -162,9 +164,9 @@ class Quadtree {
             sf::RectangleShape rectangle;
             rectangle.setSize(sf::Vector2f(this->boundary.w * 2, this->boundary.h * 2));
             rectangle.setFillColor(sf::Color::Transparent);
-            rectangle.setOutlineColor(sf::Color::White);
+            rectangle.setOutlineColor(sf::Color{ 255, 255, 255, 100 });
             rectangle.setOutlineThickness(1);
-            rectangle.setPosition(this->boundary.x- this->boundary.w, this->boundary.y - this->boundary.h);
+            rectangle.setPosition(this->boundary.x - this->boundary.w, this->boundary.y - this->boundary.h);
             window.draw(rectangle);
             if (this->divided)
             {
@@ -181,7 +183,7 @@ void draw_rec(Rec a)
     sf::RectangleShape rectangle;
     rectangle.setSize(sf::Vector2f(a.w * 2, a.h * 2));
     rectangle.setFillColor(sf::Color::Transparent);
-    rectangle.setOutlineColor(sf::Color::Green);
+    rectangle.setOutlineColor(sf::Color{ 55, 55, 55, 100 });
     rectangle.setOutlineThickness(2);
     rectangle.setPosition(a.x - a.w, a.y - a.h);
     window.draw(rectangle);
@@ -200,17 +202,17 @@ void draw_circle(sP a)
 //Quadtree(a)
 
 struct Point {
-    string id;
+    int id;
     sf::Vector2f position, velocity;
     float R, mass;
     sf::Color color;
     //sf::Vector2f prev_position;
     Point(int x,int y,int z)
     {
-        id = to_string(z);
+        id = z;
         R = Rand(3,10);
         mass = R*1.f / 100;
-        color = Colors[0];
+        color = Colors[Rand(1,5)-1];
         position = { x *1.f  , y * 1.f };
         velocity = { ((Rand(1,243)%2)?-1:1) *Rand(30,50) * 1.f , ((Rand(1,243) % 2) ? -1 : 1) * Rand(30,50) * 1.f };
         //velocity = { 0.f,0.f };
@@ -255,7 +257,7 @@ void update(Point &a) {
         velocity.y *= -1.f, position.y =  a.R;
 }
 
-void conllision(Point& a, Point& b) /* Read the equations here: https://www.vobarian.com/collisions/2dcollisions2.pdf */
+void collision(Point& a, Point& b) /* Read the equations here: https://www.vobarian.com/collisions/2dcollisions2.pdf */
 {
     float m1 = a.mass;
     float m2 = b.mass;
@@ -288,16 +290,15 @@ void conllision(Point& a, Point& b) /* Read the equations here: https://www.voba
 
 int main()
 {
+
+
     Rec a(400 * 1.f, 400 * 1.f, 400 * 1.f, 400 * 1.f);
     
-    int n;
-    cin >> n;
+
     Rec q(Rand(150,600) * 1.f, Rand(150, 600) * 1.f, 150.f, 150.f);
     vector <Point> v;
-    FOR(i, 1, n)
-    {
-        v.push_back(Point(Rand(1+200, w-200), Rand(1+200, h-200),i));
-    }
+    int cnt = 0;
+   
 
     window.setFramerateLimit(FPS);
 
@@ -307,7 +308,8 @@ int main()
         cout << "cannot load font";
         return 0;
     }
-    
+    sf::Text text;
+    text.setFont(font);
     //cout << v[0].velocity.x;
     while (window.isOpen())
     {
@@ -317,32 +319,62 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
         }
-        
-        
-        FOR(i, 0, v.size() - 1)
-            FOR(j,i+1,v.size()-1)
-                if(distance(v[i], v[j]) <= v[i].R + v[j].R)
-                    conllision(v[j], v[i]);
-        window.clear(sf::Color::Black);
-       
-        
-        for (Point& i : v) {  
-            update(i);
-            i.draww(sf::Color::Green);
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+        {
+            sf::Vector2 position = sf::Mouse::getPosition(window);
+            v.push_back(Point(position.x, position.y, cnt++));
         }
+        //if (v.size())
+            /* FOR(i, 0, v.size() - 1)
+                 FOR(j,i+1,v.size()-1)
+                     if(distance(v[i], v[j]) <= v[i].R + v[j].R)
+                         conllision(v[j], v[i]);*/
+            window.clear(sf::Color::Black);
+
+
+
         Quadtree qt(a, 4);
+        if (v.size())
         for (Point i : v)
-            qt.insert({ i.position.x,i.position.y, i.R });
-        vector <sP> res;
-        qt.query(q, res);
-        draw_rec(q);
-        for (sP i : res)
-            i.draww(sf::Color::Red);
+        {
+            qt.insert({ i.position.x,i.position.y, i.R, i.id });
+            /* if (q.contains({ i.position.x,i.position.y,i.R }))
+                 i.draww(sf::Color::Red);*/
+        }
+        if (v.size())
+        for (Point& i : v) {
+            vector <sP> res;
+            qt.query({ i.position.x + 10,i.position.y,10 ,10 * 2 }, res);
+           // draw_rec({ i.position.x + 10,i.position.y,10 ,10 * 2 });
+            for (sP j : res)
+            {
+                if (i.id != j.id && sqrt(pow(i.position.x - j.x, 2) + pow(i.position.y - j.y, 2)) <= i.R + j.R) {
+                    collision(i, v[j.id]);
+                   // cout << 1 << "\n";
+                }
+            }
+        }
+        /*if (v.size())
+         FOR(i, 0, v.size() - 1)
+            FOR(j, i + 1, v.size() - 1)
+            if (distance(v[i], v[j]) <= v[i].R + v[j].R)
+                collision(v[j], v[i]);*/
+        
+        text.setString(to_string(cnt));
+        text.setPosition(h-100, 0);
+        window.draw(text);
+
+        for (Point& i : v){
+            update(i);
+            i.draww(i.color);
+        }
+        if (cnt < 1000)
         qt.show();
         window.display();;
         /*sf::Text text;
         text.setFont(font);
         text.setString(to_string(fps);*/
+        
     }
 
     return 0;
